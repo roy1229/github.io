@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>职场逆袭日记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #fdf6fb;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            border: 1px solid #f8eaf5;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .title {
+            font-size: 24px;
+            color: #e973a1;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: #fce1ee;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            transition: 0.3s;
+        }
+
+        .status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background: #fef5fa;
+            color: #d96692;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            border: 1px solid #f8ddea;
+        }
+
+        .story {
+            padding: 16px;
+            border-radius: 16px;
+            line-height: 1.7;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .story-normal {
+            background: #fefafc;
+            border: 1px solid #f7e5f2;
+            color: #555;
+        }
+        .story-good {
+            background: #f2fff9;
+            border: 1px solid #a8e4c9;
+            color: #3a7d5a;
+        }
+        .story-bad {
+            background: #fff9f9;
+            border: 1px solid #f7d2d2;
+            color: #a15353;
+        }
+
+        .btn {
+            background: #f28dbe;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 14px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-good { background: #73c9a1; }
+        .btn-bad  { background: #b0b0b0; }
+        .btn:active { transform: scale(0.97); }
+
+        /* 飘字动画 */
+        .float {
+            position: absolute;
+            font-weight: bold;
+            font-size: 18px;
+            pointer-events: none;
+            animation: float 1.2s forwards;
+        }
+        .float-up   { color: #4caf50; }
+        .float-down { color: #f44336; }
+        @keyframes float {
+            0% { opacity:1; transform: translateY(0); }
+            100% { opacity:0; transform: translateY(-40px); }
+        }
+
+        /* 震动 */
+        @keyframes shake {
+            0%,100%{transform:translateX(0);}
+            25%{transform:translateX(-4px);}
+            75%{transform:translateX(4px);}
+        }
+        .shake { animation: shake 0.3s; }
+
+        /* 全屏爱心动画 */
+        .love-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 999;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .heart {
+            font-size: 120px;
+            animation: beat 1s infinite alternate;
+            color: #ff5e87;
+        }
+
+        .love-text {
+            margin-top: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff4a7a;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes beat {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card" id="mainCard">
+        <div class="title">职场逆袭日记</div>
+        <div class="avatar" id="avatar">👩‍💼</div>
+
+        <div class="status">
+            <div class="tag">职位：<span id="job">实习生</span></div>
+            <div class="tag">能力：<span id="power">10</span></div>
+            <div class="tag">人脉：<span id="social">5</span></div>
+            <div class="tag">金钱：<span id="money">1000</span></div>
+            <div class="tag">声望：<span id="star">0</span></div>
+        </div>
+
+        <div class="story story-normal" id="story">
+            你刚入职一家互联网公司，成为实习生。今天上班第一天，你的选择决定人生～
+        </div>
+
+        <button class="btn" onclick="actWork()">认真完成任务 ✨</button>
+        <button class="btn btn-bad" onclick="actFish()">摸鱼划水 😴</button>
+        <button class="btn btn-good" onclick="actAsk()">主动请教前辈 💬</button>
+    </div>
+
+    <script>
+        let job     = "实习生"
+        let power   = 10
+        let social  = 5
+        let money   = 1000
+        let star    = 0
+        let step    = 0
+
+        const story = document.getElementById('story')
+        const card  = document.getElementById('mainCard')
+        const avatar= document.getElementById('avatar')
+
+        // 刷新面板
+        function updateUI() {
+            document.getElementById('job').innerText    = job
+            document.getElementById('power').innerText  = power
+            document.getElementById('social').innerText = social
+            document.getElementById('money').innerText  = money
+            document.getElementById('star').innerText   = star
+        }
+
+        // 飘字
+        function floatText(text, isGood) {
+            let el = document.createElement('div')
+            el.className = isGood ? 'float float-up' : 'float float-down'
+            el.innerText = text
+            el.style.left = '50%'
+            el.style.top  = '50%'
+            el.style.transform = 'translate(-50%,-50%)'
+            card.appendChild(el)
+            setTimeout(()=>el.remove(), 1200)
+        }
+
+        // 正面反馈
+        function goodFeedback(msg) {
+            story.className = 'story story-good'
+            avatar.innerText = '👩‍💼'
+            avatar.style.transform = 'scale(1.1)'
+            setTimeout(()=>{avatar.style.transform='scale(1)'}, 300)
+            story.innerText = msg
+        }
+
+        // 负面反馈
+        function badFeedback(msg) {
+            story.className = 'story story-bad'
+            card.classList.add('shake')
+            avatar.innerText = '😔'
+            setTimeout(()=>{card.classList.remove('shake')}, 300)
+            story.innerText = msg
+        }
+
+        // 结局爱心动画
+        function showLoveEnd() {
+            let div = document.createElement('div')
+            div.className = 'love-overlay'
+            div.innerHTML = `
+                <div class="heart">❤️</div>
+                <div class="love-text">爱你呦老婆——爱你的老公</div>
+            `
+            document.body.appendChild(div)
+        }
+
+        // 剧情推进
+        function nextStep() {
+            step++
+            setTimeout(()=>{
+                story.className = 'story story-normal'
+                if(step==1){
+                    story.innerText = "主管对你很满意，安排了正式任务～"
+                }else if(step==2){
+                    story.innerText = "项目上线，团队都认可你啦🌟"
+                    power+=5;social+=3;
+                }else if(step==3){
+                    story.innerText = "恭喜转正！成为正式员工🎊"
+                    job="正式员工";money+=2000;
+                }else if(step==4){
+                    story.innerText = "负责核心模块，能力飞速提升💪"
+                    power+=15;star+=5;
+                }else if(step==5){
+                    story.innerText = "晋升组长！开始带团队啦🥳"
+                    job="组长";money+=5000;social+=10;
+                }else if(step==6){
+                    story.innerText = "成为部门主管，手握核心业务😎"
+                    job="部门主管";star+=20;
+                }else if(step==7){
+                    story.innerText = "晋升总监，行业小有名气✨"
+                    job="总监";money+=20000;
+                }else if(step==8){
+                    story.innerText = "成为副总裁，人生开挂🚀"
+                    job="副总裁";star+=50;
+                }else if(step>=9){
+                    story.innerText = "🎉 恭喜逆袭成为CEO，职场巅峰！"
+                    document.querySelectorAll('.btn').forEach(b=>b.remove())
+                    setTimeout(showLoveEnd, 1000)
+                }
+                updateUI()
+            }, 1500)
+        }
+
+        // 1. 认真工作
+        function actWork() {
+            power += 3
+            money += 200
+            floatText('能力+3 金钱+200', true)
+            goodFeedback('表现超棒！认真完成任务，获得奖励～')
+            updateUI()
+            nextStep()
+        }
+
+        // 2. 摸鱼
+        function actFish() {
+            power -= 5
+            star  -= 2
+            floatText('能力-5 声望-2', false)
+            badFeedback('哎呀被主管看到了，印象变差了😥')
+            updateUI()
+            if(power <= 0){
+                setTimeout(()=>{
+                    story.innerText = "❌ 表现太差，被开除了，游戏结束"
+                    document.querySelectorAll('.btn').forEach(b=>b.remove())
+                    // 坏结局也弹出爱心
+                    setTimeout(showLoveEnd, 1000)
+                }, 1000)
+            }
+        }
+
+        // 3. 请教前辈
+        function actAsk() {
+            social += 5
+            star   += 2
+            floatText('人脉+5 声望+2', true)
+            goodFeedback('前辈很喜欢你！收获好人缘💖')
+            updateUI()
+            nextStep()
+        }
+
+        updateUI()
+    </script>
+</body>
+</html>
